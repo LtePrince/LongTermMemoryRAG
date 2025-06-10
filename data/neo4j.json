@@ -1,0 +1,5 @@
+{
+    "url" : "bolt://localhost:7687",
+    "name" : "neo4j",
+    "password" : "Wzy20031003"
+}

@@ -1,0 +1,29 @@
+{
+  "clientId": "2f6d72f8-72f8-5d72f871d0e-8d72f871d0e2bf3-e2bf3882",
+  "currentIndex": 0,
+  "tabs": [
+    {
+      "name": "工具",
+      "icon": "icon-tool",
+      "type": "blank",
+      "componentIndex": 2,
+      "storage": {
+        "activeNames": [
+          0
+        ],
+        "formData": {
+          "cypher": "CALL db.labels() YIELD label RETURN label"
+        },
+        "currentToolName": "executeReadOnlyCypherQuery",
+        "lastToolCallResponse": {
+          "content": [
+            {
+              "type": "text",
+              "text": "[map[label:Person] map[label:Topic] map[label:Blog] map[label:DustUser] map[label:Test] map[label:P] map[label:Staff] map[label:BlogComment]]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

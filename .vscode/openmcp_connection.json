@@ -1,1 +1,40 @@
-{"items":[]}
+{
+  "items": [
+    [
+      {
+        "connectionType": "SSE",
+        "command": "",
+        "args": [],
+        "url": "http://localhost:8083/sse",
+        "cwd": "",
+        "oauth": "",
+        "clientName": "openmcp.connect.SSE",
+        "clientVersion": "0.0.1",
+        "env": {
+          "HOME": "/home/adolph",
+          "LOGNAME": "adolph",
+          "PATH": "/home/adolph/bin:/home/adolph/Envirenment/anaconda3/condabin:/home/adolph/Envirenment/go/bin:/home/adolph/.nvm/versions/node/v23.0.0/bin:/home/adolph/.cargo/bin:/home/adolph/Envirenment/MPI/mpich/bin:/home/adolph/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/usr/local/cuda-12.2/bin",
+          "SHELL": "/bin/bash",
+          "TERM": "",
+          "USER": "adolph"
+        },
+        "serverInfo": {
+          "name": "只读 Neo4j 服务器",
+          "version": "0.0.1"
+        },
+        "filePath": "SSE-1749566253047",
+        "name": "只读 Neo4j 服务器",
+        "version": "0.0.1"
+      }
+    ],
+    [
+      {
+        "connectionType": "SSE",
+        "name": "SSE-1749566253047",
+        "version": "1.0",
+        "url": "http://localhost:8083/sse",
+        "oauth": ""
+      }
+    ]
+  ]
+}
