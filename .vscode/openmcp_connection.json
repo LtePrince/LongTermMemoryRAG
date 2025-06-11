@@ -13,7 +13,7 @@
         "env": {
           "HOME": "/home/adolph",
           "LOGNAME": "adolph",
-          "PATH": "/home/adolph/bin:/home/adolph/Envirenment/anaconda3/condabin:/home/adolph/Envirenment/go/bin:/home/adolph/.nvm/versions/node/v23.0.0/bin:/home/adolph/.cargo/bin:/home/adolph/Envirenment/MPI/mpich/bin:/home/adolph/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/usr/local/cuda-12.2/bin",
+          "PATH": "/home/adolph/bin:/home/adolph/Envirenment/Neo4j/neo4j/bin:/home/adolph/Envirenment/anaconda3/condabin:/home/adolph/Envirenment/go/bin:/home/adolph/.nvm/versions/node/v23.0.0/bin:/home/adolph/.cargo/bin:/home/adolph/Envirenment/MPI/mpich/bin:/home/adolph/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/home/adolph/Share_Document/code/pke/riscv64-elf-gcc/bin:/usr/local/go/bin:/usr/local/cuda-12.2/bin",
           "SHELL": "/bin/bash",
           "TERM": "",
           "USER": "adolph"
