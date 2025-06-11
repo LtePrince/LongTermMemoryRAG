@@ -43,6 +43,18 @@ func main() {
 		),
 	)
 
+	getAllNodeTypes := mcp.NewTool("getAllNodeTypes",
+		mcp.WithDescription("获取所有的节点类型"),
+	)
+
+	getNodeField := mcp.NewTool("getNodeField",
+		mcp.WithDescription("获取节点的字段"),
+		mcp.WithString("nodeLabel",
+			mcp.Required(),
+			mcp.Description("节点的标签"),
+		),
+	)
+
 	// 将真实函数和申明的 schema 绑定
 	s.AddTool(executeReadOnlyCypherQuery, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		args, ok := request.Params.Arguments.(map[string]interface{})
@@ -54,6 +66,38 @@ func main() {
 			return mcp.NewToolResultText(""), fmt.Errorf("cypher argument is not a string")
 		}
 		result, err := util.ExecuteReadOnlyCypherQuery(cypher)
+
+		fmt.Println(result)
+
+		if err != nil {
+			return mcp.NewToolResultText(""), err
+		}
+
+		return mcp.NewToolResultText(fmt.Sprintf("%v", result)), nil
+	})
+
+	s.AddTool(getAllNodeTypes, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		result, err := util.GetAllNodeTypes()
+
+		fmt.Println(result)
+
+		if err != nil {
+			return mcp.NewToolResultText(""), err
+		}
+
+		return mcp.NewToolResultText(fmt.Sprintf("%v", result)), nil
+	})
+
+	s.AddTool(getNodeField, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		args, ok := request.Params.Arguments.(map[string]interface{})
+		if !ok {
+			return mcp.NewToolResultText(""), fmt.Errorf("invalid arguments type")
+		}
+		nodeLabel, ok := args["nodeLabel"].(string)
+		if !ok {
+			return mcp.NewToolResultText(""), fmt.Errorf("nodeLabel argument is not a string")
+		}
+		result, err := util.GetNodeFields(nodeLabel)
 
 		fmt.Println(result)
 
