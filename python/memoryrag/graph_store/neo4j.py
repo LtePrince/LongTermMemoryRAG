@@ -12,122 +12,14 @@ try:
 except ImportError:
     raise ImportError("rank_bm25 is not installed. Please install it using pip install rank-bm25")
 
-from core.memory_rag.utils import format_entities
-from core.memory_rag.graph.tools import *
-
-from core.memory_rag.config.base import BaseLlmConfig
+# 新的配置和组件导入
+from memoryrag.embedding import QwenEmbedding
+from memoryrag.llm import DeepSeekLLM
+from memoryrag.config import EmbeddingConfig, LlmConfig
 
 logger = logging.getLogger(__name__)
 
-def load_class(class_type):
-    module_path, class_name = class_type.rsplit(".", 1)
-    module = importlib.import_module(module_path)
-    return getattr(module, class_name)
-
-class LlmFactory:
-    provider_to_class = {
-        "deepseek": "core.memory_rag.llms.deepseek.DeepSeekLLM",
-        # "ollama": "mem0.llms.ollama.OllamaLLM",
-        # "openai": "mem0.llms.openai.OpenAILLM",
-        # "groq": "mem0.llms.groq.GroqLLM",
-        # "together": "mem0.llms.together.TogetherLLM",
-        # "aws_bedrock": "mem0.llms.aws_bedrock.AWSBedrockLLM",
-        # "litellm": "mem0.llms.litellm.LiteLLM",
-        # "azure_openai": "mem0.llms.azure_openai.AzureOpenAILLM",
-        # "openai_structured": "mem0.llms.openai_structured.OpenAIStructuredLLM",
-        # "anthropic": "mem0.llms.anthropic.AnthropicLLM",
-        # "azure_openai_structured": "mem0.llms.azure_openai_structured.AzureOpenAIStructuredLLM",
-        # "gemini": "mem0.llms.gemini.GeminiLLM",
-        # "xai": "mem0.llms.xai.XAILLM",
-        # "sarvam": "mem0.llms.sarvam.SarvamLLM",
-        # "lmstudio": "mem0.llms.lmstudio.LMStudioLLM",
-        # "langchain": "mem0.llms.langchain.LangchainLLM",
-    }
-
-    @classmethod
-    def create(cls, provider_name, config):
-        class_type = cls.provider_to_class.get(provider_name)
-        if class_type:
-            llm_instance = load_class(class_type)
-            base_config = BaseLlmConfig(**config)
-            return llm_instance(base_config)
-        else:
-            raise ValueError(f"Unsupported Llm provider: {provider_name}")
-
-class EmbedderFactory:
-    provider_to_class = {
-        "qwen": "core.memory_rag.embeddings.qwen.QwenEmbedding",
-        # "openai": "mem0.embeddings.openai.OpenAIEmbedding",
-        # "ollama": "mem0.embeddings.ollama.OllamaEmbedding",
-        # "huggingface": "mem0.embeddings.huggingface.HuggingFaceEmbedding",
-        # "azure_openai": "mem0.embeddings.azure_openai.AzureOpenAIEmbedding",
-        # "gemini": "mem0.embeddings.gemini.GoogleGenAIEmbedding",
-        # "vertexai": "mem0.embeddings.vertexai.VertexAIEmbedding",
-        # "together": "mem0.embeddings.together.TogetherEmbedding",
-        # "lmstudio": "mem0.embeddings.lmstudio.LMStudioEmbedding",
-        # "langchain": "mem0.embeddings.langchain.LangchainEmbedding",
-        # "aws_bedrock": "mem0.embeddings.aws_bedrock.AWSBedrockEmbedding",
-    }
-    
-    @classmethod
-    def create(cls, provider_name, config, vector_config: Optional[dict]):
-        # 如果是千问模型
-        if provider_name == "qwen":
-            class_type = cls.provider_to_class.get(provider_name)
-            if class_type:
-                qwen_embedding_class = load_class(class_type)
-                return qwen_embedding_class(config)
-            else:
-                raise ValueError(f"Unsupported Embedder provider: {provider_name}")
-        else:
-            class_type = cls.provider_to_class.get(provider_name)
-            if class_type:
-                embedding_class = load_class(class_type)
-                return embedding_class(config)
-            else:
-                raise ValueError(f"Unsupported Embedder provider: {provider_name}，当前支持 'qwen' 和 'sentence_transformers'。")
-        
-class VectorStoreFactory:
-    provider_to_class = {
-        "chroma": "core.memory_rag.config.vector_config.ChromaDB",
-        # "qdrant": "mem0.vector_stores.qdrant.Qdrant",
-        # "pgvector": "mem0.vector_stores.pgvector.PGVector",
-        # "milvus": "mem0.vector_stores.milvus.MilvusDB",
-        # "upstash_vector": "mem0.vector_stores.upstash_vector.UpstashVector",
-        # "azure_ai_search": "mem0.vector_stores.azure_ai_search.AzureAISearch",
-        # "pinecone": "mem0.vector_stores.pinecone.PineconeDB",
-        # "mongodb": "mem0.vector_stores.mongodb.MongoDB",
-        # "redis": "mem0.vector_stores.redis.RedisDB",
-        # "elasticsearch": "mem0.vector_stores.elasticsearch.ElasticsearchDB",
-        # "vertex_ai_vector_search": "mem0.vector_stores.vertex_ai_vector_search.GoogleMatchingEngine",
-        # "opensearch": "mem0.vector_stores.opensearch.OpenSearchDB",
-        # "supabase": "mem0.vector_stores.supabase.Supabase",
-        # "weaviate": "mem0.vector_stores.weaviate.Weaviate",
-        # "faiss": "mem0.vector_stores.faiss.FAISS",
-        # "langchain": "mem0.vector_stores.langchain.Langchain",
-    }
-    @classmethod
-    def create(cls, provider_name, config):
-        class_type = cls.provider_to_class.get(provider_name)
-        if class_type:
-            if not isinstance(config, dict):
-                # 检查是否有model_dump方法（Pydantic模型）
-                if hasattr(config, 'model_dump'):
-                    config = config.model_dump()
-                else:
-                    # 对于非Pydantic模型（如ChromaDB），直接返回实例
-                    return config
-            vector_store_instance = load_class(class_type)
-            return vector_store_instance(**config)
-        else:
-            raise ValueError(f"Unsupported VectorStore provider: {provider_name}")
-
-    @classmethod
-    def reset(cls, instance):
-        instance.reset()
-        return instance
-    
-class GraphStoreFactory:
+class Neo4jGraph:
     def __init__(self, config):
         self.config = config
         self.graph = Neo4jGraph(
@@ -137,9 +29,15 @@ class GraphStoreFactory:
             self.config.graph_store.config.database,
             refresh_schema=False,
         )
-        self.embedding_model = EmbedderFactory.create(
-            self.config.embedder.provider, self.config.embedder.config, self.config.vector_store.config
-        )
+        
+        # 使用新的初始化方式
+        embedding_config = EmbeddingConfig.from_env()
+        self.embedding_model = QwenEmbedding(embedding_config.get_config())
+        
+        # 初始化 LLM 模型
+        llm_config = LlmConfig.from_env()
+        self.llm = DeepSeekLLM(llm_config.get_config())
+        
         self.node_label = ":`__Entity__`" if self.config.graph_store.config.base_label else ""
 
         if self.config.graph_store.config.base_label:
@@ -155,13 +53,7 @@ class GraphStoreFactory:
             except Exception:
                 pass
 
-        self.llm_provider = "openai_structured"
-        if self.config.llm.provider:
-            self.llm_provider = self.config.llm.provider
-        if self.config.graph_store.llm:
-            self.llm_provider = self.config.graph_store.llm.provider
-
-        self.llm = LlmFactory.create(self.llm_provider, self.config.llm.config)
+        self.llm_provider = "deepseek"  # 固定使用 deepseek
         self.user_id = None
         self.threshold = 0.7
 

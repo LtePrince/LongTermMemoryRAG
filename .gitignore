@@ -1,3 +1,7 @@
 /key/
 .vscode/
 .openmcp/
+__pycache__/
+
+.env
+

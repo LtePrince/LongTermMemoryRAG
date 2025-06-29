@@ -1,24 +1,26 @@
 import json
 import os
 from typing import Dict, List, Optional
-
 from openai import OpenAI
 
-from core.memory_rag.config.base import BaseLlmConfig
-
-
 class DeepSeekLLM():
-    def __init__(self, config: Optional[BaseLlmConfig] = None):
-        if config is None:
-            self.config = BaseLlmConfig()
-        else:
-            self.config = config
+    def __init__(self, config: dict):
+        """
+        初始化 DeepSeekLLM
+        :param config: 配置字典，包含 model, base_url, api_key 等参数
+        """
+        self.model = config.get("model", "deepseek-chat")
+        self.temperature = config.get("temperature", 0.1)
+        self.max_tokens = config.get("max_tokens", 2000)
+        self.top_p = config.get("top_p", 0.1)
+        self.top_k = config.get("top_k", 1)
 
-        if not self.config.model:
-            self.config.model = "deepseek-chat"
-
-        api_key = self.config.api_key or os.getenv("CHAT_API_KEY")
-        base_url = self.config.deepseek_base_url or "https://api.deepseek.com"
+        # 从配置字典或环境变量获取 API Key
+        api_key = config.get("api_key") or os.getenv("CHAT_API_KEY")
+        if not api_key:
+            raise ValueError("DeepSeek API Key 未找到，请设置 CHAT_API_KEY 环境变量或在配置中提供 api_key")
+        
+        base_url = config.get("base_url", "https://api.deepseek.com")
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
     def _parse_response(self, response, tools):
@@ -71,11 +73,11 @@ class DeepSeekLLM():
             str: The generated response.
         """
         params = {
-            "model": self.config.model,
+            "model": self.model,
             "messages": messages,
-            "temperature": self.config.temperature,
-            "max_tokens": self.config.max_tokens,
-            "top_p": self.config.top_p,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "top_p": self.top_p,
         }
 
         if tools:
