@@ -79,6 +79,18 @@ class DeepSeekLLM():
             "max_tokens": self.max_tokens,
             "top_p": self.top_p,
         }
+        
+        # 处理 response_format 参数
+        if response_format:
+            if isinstance(response_format, str):
+                if response_format == "json_object":
+                    params["response_format"] = {"type": "json_object"}
+                elif response_format == "text":
+                    params["response_format"] = {"type": "text"}
+                else:
+                    params["response_format"] = {"type": response_format}
+            else:
+                params["response_format"] = response_format
 
         if tools:
             params["tools"] = tools

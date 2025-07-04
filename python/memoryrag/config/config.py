@@ -144,7 +144,7 @@ class ChromaDBConfig:
 class Neo4jConfig:
     """Neo4j database configuration"""
     url: str = "bolt://localhost:7687"
-    user: str = "neo4j"
+    username: str = "neo4j"
     password: str = "password"
     database: str = "neo4j"
 
@@ -153,7 +153,7 @@ class Neo4jConfig:
         """Create Neo4jConfig from environment variables"""
         return cls(
             url=os.getenv("NEO4J_URL", "bolt://localhost:7687"),
-            user=os.getenv("NEO4J_USER", "neo4j"),
+            username=os.getenv("NEO4J_USERNAME", "neo4j"),
             password=os.getenv("NEO4J_PASSWORD", "password"),
             database=os.getenv("NEO4J_DATABASE", "neo4j")
         )
@@ -162,14 +162,14 @@ class Neo4jConfig:
         """返回用于初始化 Neo4j 驱动的配置字典"""
         return {
             'url': self.url,
-            'user': self.user,
+            'username': self.username,
             'password': self.password,
             'database': self.database
         }
     
     def validate(self):
         """Validate Neo4j configuration"""
-        if not self.url or not self.user or not self.password:
+        if not self.url or not self.username or not self.password:
             raise ValueError("Neo4j configuration must include 'url', 'user', and 'password'")
         if not self.url.startswith("bolt://"):
             raise ValueError("Neo4j URI must start with 'bolt://'")

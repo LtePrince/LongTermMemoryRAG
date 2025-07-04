@@ -46,7 +46,7 @@ def test_config():
         neo4j_config.validate()
         print("\n✅ Neo4j configuration loaded successfully!")
         print(f"Neo4j URL: {neo4j_config.url}")
-        print(f"Neo4j user: {neo4j_config.user}")
+        print(f"Neo4j user: {neo4j_config.username}")
         print(f"Neo4j database: {neo4j_config.database}")
         
         return config, embedding_config, llm_config, neo4j_config
@@ -63,11 +63,12 @@ def test_neo4j(neo4j_config):
         
         # Test Neo4j connection using config.get_config()
         config = neo4j_config.get_config()
+        config['database'] = "lingchat"
         
         # Create driver and test connection
         graph = Neo4jGraph(
             config['url'],
-            config['user'],
+            config['username'],
             config['password'],
             config['database'] if 'database' in config else "neo4j",
             refresh_schema=False,
