@@ -1,0 +1,24 @@
+# Core dependencies
+openai>=1.86.0
+chromadb>=0.6.3
+langchain-neo4j>=0.4.0
+python-dotenv>=1.1.0
+
+# MCP (Model Context Protocol) server
+mcp>=1.9.4
+fastmcp >= 2.8.1
+
+# Data structure and typing
+# dataclasses
+
+# Logging (built-in, no need to install)
+# Standard library modules used:
+# - logging
+# - typing
+# - enum
+# - json
+# - time
+# - uuid
+# - importlib
+# - os
+# - sys
