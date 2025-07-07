@@ -66,7 +66,7 @@ class LightNeo4jMemory:
             CREATE (n:{node_type} $properties)
             RETURN n.id AS id
         """
-        result = self.graph.query(query, parameters={"properties": properties})
+        result = self.graph.query(query, params={"properties": properties})
         if result:
             node_id = result[0]['id']
             logger.info(f"Added {node_type} node with ID: {node_id}")
@@ -86,7 +86,7 @@ class LightNeo4jMemory:
         """
         # 检查起始节点是否存在
         start_exists = self.graph.query(
-            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", parameters={"id": start_node_id}
+            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", params={"id": start_node_id}
         )
         if not start_exists:
             logger.error(f"Start node with id {start_node_id} does not exist.")
@@ -94,7 +94,7 @@ class LightNeo4jMemory:
 
         # 检查结束节点是否存在
         end_exists = self.graph.query(
-            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", parameters={"id": end_node_id}
+            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", params={"id": end_node_id}
         )
         if not end_exists:
             logger.error(f"End node with id {end_node_id} does not exist.")
@@ -109,7 +109,7 @@ class LightNeo4jMemory:
             "end_id": end_node_id,
             "properties": properties or {}
         }
-        self.graph.query(query, parameters=parameters)
+        self.graph.query(query, params=parameters)
         logger.info(f"Added relationship {rel_type} from {start_node_id} to {end_node_id}")
 
     def update_node(self, node_id: str, properties: Dict[str, Any]):
@@ -126,7 +126,7 @@ class LightNeo4jMemory:
             "id": node_id,
             "properties": properties
         }
-        self.graph.query(query, parameters=parameters)
+        self.graph.query(query, params=parameters)
         logger.info(f"Updated node {node_id} with properties: {properties}")
 
     def delete_node(self, node_id: str):
@@ -140,7 +140,7 @@ class LightNeo4jMemory:
             DETACH DELETE n
         """
         parameters = {"id": node_id}
-        self.graph.query(query, parameters=parameters)
+        self.graph.query(query, params=parameters)
         logger.info(f"Deleted node {node_id} and all its relationships")    
 
     def delete_relationship(self, start_node_id: str, end_node_id: str, rel_type: str):
@@ -153,7 +153,7 @@ class LightNeo4jMemory:
         """
         # 检查起始节点是否存在
         start_exists = self.graph.query(
-            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", parameters={"id": start_node_id}
+            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", params={"id": start_node_id}
         )
         if not start_exists:
             logger.error(f"Start node with id {start_node_id} does not exist.")
@@ -161,7 +161,7 @@ class LightNeo4jMemory:
 
         # 检查结束节点是否存在
         end_exists = self.graph.query(
-            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", parameters={"id": end_node_id}
+            "MATCH (n) WHERE n.id = $id RETURN n LIMIT 1", params={"id": end_node_id}
         )
         if not end_exists:
             logger.error(f"End node with id {end_node_id} does not exist.")
@@ -175,7 +175,7 @@ class LightNeo4jMemory:
             "start_id": start_node_id,
             "end_id": end_node_id
         }
-        self.graph.query(query, parameters=parameters)
+        self.graph.query(query, params=parameters)
         logger.info(f"Deleted relationship {rel_type} from {start_node_id} to {end_node_id}")
 
     def search_nodes(self, node_type: str, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -194,7 +194,7 @@ class LightNeo4jMemory:
         query += " RETURN n"
         
         parameters = filters or {}
-        results = self.graph.query(query, parameters=parameters)
+        results = self.graph.query(query, params=parameters)
         return [dict(record['n']) for record in results]
 
     def search_relationships(self, start_node_id: str, rel_type: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -212,5 +212,36 @@ class LightNeo4jMemory:
         query += f"]->(b) WHERE a.id = $start_id RETURN r, b"
         
         parameters = {"start_id": start_node_id}
-        results = self.graph.query(query, parameters=parameters)
-        return [{"relationship": dict(record['r']), "end_node": dict(record['b'])} for record in results]   
+        results = self.graph.query(query, params=parameters)
+        
+        formatted_results = []
+        for record in results:
+            try:
+                rel_dict = {}
+                node_dict = {}
+                
+                # 安全地转换关系对象
+                if hasattr(record['r'], '_properties'):
+                    rel_dict = dict(record['r']._properties)
+                elif hasattr(record['r'], '__dict__'):
+                    rel_dict = record['r'].__dict__
+                else:
+                    rel_dict = dict(record['r']) if record['r'] else {}
+                
+                # 安全地转换节点对象
+                if hasattr(record['b'], '_properties'):
+                    node_dict = dict(record['b']._properties)
+                elif hasattr(record['b'], '__dict__'):
+                    node_dict = record['b'].__dict__
+                else:
+                    node_dict = dict(record['b']) if record['b'] else {}
+                
+                formatted_results.append({
+                    "relationship": rel_dict,
+                    "end_node": node_dict
+                })
+            except Exception as e:
+                logger.warning(f"Error converting relationship record: {e}")
+                continue
+        
+        return formatted_results   

@@ -3,13 +3,14 @@ from dotenv import load_dotenv
 from typing import Any, Dict, Optional, Union, List
 from memoryrag.graph_store.light_neo4j import LightNeo4jMemory
 
-from memoryrag.config import EmbeddingConfig
+from memoryrag.config import EmbeddingConfig, Neo4jConfig
 from memoryrag.embedding import QwenEmbedding
 
 load_dotenv()
 
 mcp = FastMCP("graph-rag-memory",version="0.1.0")
-light_memory_client = LightNeo4jMemory()
+config = Neo4jConfig().from_env()
+light_memory_client = LightNeo4jMemory(config)
 embeder = QwenEmbedding(EmbeddingConfig.from_env().get_config())
 
 light_memory_client._ensure_vector_index()
