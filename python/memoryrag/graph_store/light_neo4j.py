@@ -111,6 +111,7 @@ class LightNeo4jMemory:
         }
         self.graph.query(query, params=parameters)
         logger.info(f"Added relationship {rel_type} from {start_node_id} to {end_node_id}")
+        return True
 
     def update_node(self, node_id: str, properties: Dict[str, Any]):
         """        更新节点属性
@@ -128,6 +129,7 @@ class LightNeo4jMemory:
         }
         self.graph.query(query, params=parameters)
         logger.info(f"Updated node {node_id} with properties: {properties}")
+        return True
 
     def delete_node(self, node_id: str):
         """
@@ -141,7 +143,8 @@ class LightNeo4jMemory:
         """
         parameters = {"id": node_id}
         self.graph.query(query, params=parameters)
-        logger.info(f"Deleted node {node_id} and all its relationships")    
+        logger.info(f"Deleted node {node_id} and all its relationships")
+        return True
 
     def delete_relationship(self, start_node_id: str, end_node_id: str, rel_type: str):
         """
@@ -177,6 +180,7 @@ class LightNeo4jMemory:
         }
         self.graph.query(query, params=parameters)
         logger.info(f"Deleted relationship {rel_type} from {start_node_id} to {end_node_id}")
+        return True
 
     def search_nodes(self, node_type: str, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
@@ -195,6 +199,8 @@ class LightNeo4jMemory:
         
         parameters = filters or {}
         results = self.graph.query(query, params=parameters)
+        if not results:
+            return []
         return [dict(record['n']) for record in results]
 
     def search_relationships(self, start_node_id: str, rel_type: Optional[str] = None) -> List[Dict[str, Any]]:

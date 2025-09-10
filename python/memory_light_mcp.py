@@ -15,6 +15,10 @@ embeder = QwenEmbedding(EmbeddingConfig.from_env().get_config())
 
 light_memory_client._ensure_vector_index()
 
+@mcp.tool(description="Get current user. You can search related Information after this.")
+async def get_current_user() -> str:
+    return "Adolph"
+
 @mcp.tool(description="Add node extracted from messages to graph memory. The properties should include 'id', 'name', 'type', 'description', 'created_at', and 'updated_at'.")
 async def add_node(node_type: str, properties: Dict[str, Any]):
     properties['embedding'] = embeder.embed(properties.get('description', ''))

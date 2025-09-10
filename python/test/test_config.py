@@ -149,7 +149,7 @@ def test_embedding(embedding_config):
 def test_chromadb(config):
     """Test ChromaDB connection"""
     try:
-        from memoryrag.vector_store.chromadb_store import ChromaDB
+        from python.memoryrag.vector_store.chromadb import ChromaDB
         
         # Create ChromaDB store using config.get_config()
         store = ChromaDB(config.get_config())
